@@ -21,27 +21,6 @@ body {
 	/* this will add equal space between each image */
 }
 
-/* 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.card-holder {
-  width: 100vw;
-  min-height: 100vh;
-}
-
-.card {
-  background: #45CE30;
-  padding: 20px;
-  width: 60px;
-  max-width: 500px;
-  text-align: center;
-  font-family: Arial;
-} */
-
 #draw_card {
 	display: flex;
 	overflow-x: auto;

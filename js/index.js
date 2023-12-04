@@ -9,7 +9,9 @@ let playerTotalBetPoints = 100
 let dealerTotalBetPoints = 100
 
 let playerCardsValue = 0
-let dealetCardsValue = 0
+let dealerCardsValue = 0
+
+let userDone = false
 
 // Users Funtionality
 urlGet(urlUsers)
@@ -21,12 +23,16 @@ urlGet(urlUsers)
 
 function showUsers(users) {
   const listUsers = getEl('#list')
+  
 
   users.forEach(user => {
+    console.log(user)
     const li = createEl('li')
-    li.textContent = user.username
+    const deleteBtn = createEl('button')
+    li.textContent = `${user.username} ${user.points} ${user.wins_loses[0]} | ${user.wins_loses[1]}`
+    deleteBtn.textContent = "DELETE"
 
-    listUsers.append(li)
+    listUsers.append(li, deleteBtn)
   })
 }
 
@@ -94,8 +100,6 @@ function showCardOnTable(cards, cardsEl) {
 
   cards.cards.forEach(card => {
     const crd = getEl(cardsEl)
-    // console.log(crd)
-    // console.log(card.value)
     const img = createEl('img')
 
     img.src = card.image
@@ -105,7 +109,9 @@ function showCardOnTable(cards, cardsEl) {
 
     addPlayerValue(card, cardsEl)
     updateTableScore(cardsEl)
-    checkResult()
+    if ( userDone) {
+      checkResult()
+    }
   })
 }
 
@@ -116,7 +122,7 @@ function addPlayerValue(card, player) {
   if (player === "#cards_player") {
     playerCardsValue += value
   } else {
-    dealetCardsValue += value
+    dealerCardsValue += value
   }
 }
 
@@ -127,7 +133,7 @@ function cleanTable() {
   cardsEl2.innerHTML = ''
 
   playerCardsValue = 0
-  dealetCardsValue = 0
+  dealerCardsValue = 0
 
   getEl('#score_player').textContent = `Player: 0`
   getEl('#score_casino').textContent = `Casino: 0`
@@ -137,14 +143,27 @@ function updateTableScore(player) {
   if (player === "#cards_player") {
     getEl('#score_player').textContent = `Player: ${playerCardsValue}`
   } else {
-    getEl('#score_casino').textContent = `Casino: ${dealetCardsValue}`
+    getEl('#score_casino').textContent = `Casino: ${dealerCardsValue}`
   }
 }
 
 function checkResult() {
   if (playerCardsValue > 21) {
-    console.log('You lose!')
     alert('You lose!')
+    cleanTable()
+  } else if (dealerCardsValue > 21 ){
+    alert('You win!')
+    cleanTable()
+  } else if (dealerCardsValue < 15 ) {
+    callDealerHit()
+  } else if (dealerCardsValue >= 15 ) {
+    if (playerCardsValue > dealerCardsValue) {
+      alert('You win!')
+      cleanTable()
+    } else {
+      alert('You lose!')
+      cleanTable()
+    }
   }
 }
 
@@ -169,11 +188,37 @@ function createEl(el) {
   return document.createElement(el)
 }
 
+
+
+
+
 // URL Functions
-function urlGet(url, method, id) {
+// GET
+function urlGet(url) {
   return fetch(url)
     .then(res => res.json())
 }
+
+// PATCH and DELETE
+function userPatch(url, method, body, id) {
+  const options = {method: method,
+    body: JSON.stringify(body),
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+    },
+  }
+  const urlAddress = `${url}/${id}`
+  return fetch(urlAddress, options)
+    .then(res => res.json())
+}
+
+
+
+
+
+
+
+
 
 function urlCUD(url, method, id) {
   fetch(url)
